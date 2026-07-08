@@ -1,0 +1,15 @@
+# Exclude backend (ML) files from Vercel deployment
+backend/
+*.keras
+backend/*.keras
+
+# Exclude portable Git
+MinGit/
+/MinGit/
+minGit/
+
+# Exclude local build and modules
+node_modules/
+.next/
+out/
+.vercel

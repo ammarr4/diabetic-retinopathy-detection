@@ -261,3 +261,149 @@ export function DashboardLayout({ children }) {
     </SidebarProvider>
   )
 }
+
+export function DashboardSidebar() {
+  const pathname = usePathname()
+  const [userName, setUserName] = useState("User")
+  const [userEmail, setUserEmail] = useState("user@example.com")
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userInfo = localStorage.getItem("user")
+        if (userInfo) {
+          const user = JSON.parse(userInfo)
+          if (user.name) setUserName(user.name)
+          if (user.email) setUserEmail(user.email)
+        }
+      } catch (error) {
+        console.error("Error reading user info:", error)
+      }
+    }
+  }, [])
+
+  const handleLogout = () => {
+    document.cookie = "auth=false; path=/; max-age=0"
+    localStorage.removeItem("user")
+    window.location.href = "/login"
+  }
+
+  const isActive = (path) => pathname === path
+
+  return (
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarHeader>
+          <div className="flex items-center px-2 py-4">
+            <img src="/logo.png" alt="ADDR Logo" className="h-14 w-auto" />
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
+                    <Link href="/dashboard">
+                      <Home className="h-4 w-4" />
+                      <span>Overview</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href="/dashboard?tab=upload">
+                      <Upload className="h-4 w-4" />
+                      <span>Upload Image</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href="/dashboard?tab=history">
+                      <FileText className="h-4 w-4" />
+                      <span>Scan History</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href="/dashboard?tab=analytics">
+                      <BarChart3 className="h-4 w-4" />
+                      <span>Analytics</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarSeparator />
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive("/dashboard/settings")}>
+                    <Link href="/dashboard">
+                      <Settings className="h-4 w-4" />
+                      <span>Account Settings</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive("/dashboard/help")}>
+                    <Link href="/dashboard">
+                      <HelpCircle className="h-4 w-4" />
+                      <span>Help & Support</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <div className="p-2">
+            <div className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100">
+              <div className="flex items-center">
+                <Avatar className="h-8 w-8 mr-2">
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                  <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{userName}</p>
+                  <p className="text-xs text-gray-500">{userEmail}</p>
+                </div>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Settings className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+    </SidebarProvider>
+  )
+}
